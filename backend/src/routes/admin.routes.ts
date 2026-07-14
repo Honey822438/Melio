@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { adminGetProductsHandler, adminDeleteProductHandler } from '../controllers/product.controller'
 import { createCategoryHandler, deleteCategoryHandler } from '../controllers/category.controller'
+import { adminGetOrdersHandler } from '../controllers/order.controller'
 import { verifyToken, requireRole } from '../middleware/auth'
 
 const router = Router()
@@ -15,5 +16,8 @@ router.delete('/products/:id', adminDeleteProductHandler)
 // Categories
 router.post('/categories', createCategoryHandler)
 router.delete('/categories/:id', deleteCategoryHandler)
+
+// Orders
+router.get('/orders', adminGetOrdersHandler)
 
 export default router

@@ -8,6 +8,8 @@ import categoryRoutes from './routes/category.routes'
 import sellerRoutes from './routes/seller.routes'
 import adminRoutes from './routes/admin.routes'
 import searchRoutes from './routes/search.routes'
+import cartRoutes from './routes/cart.routes'
+import orderRoutes from './routes/order.routes'
 
 dotenv.config()
 
@@ -40,6 +42,8 @@ app.use('/api/categories', categoryRoutes)
 app.use('/api/seller', sellerRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/search', searchRoutes)
+app.use('/api/cart', cartRoutes)
+app.use('/api/orders', orderRoutes)
 
 // 404 handler
 app.use((_req: Request, res: Response<ApiResponse<null>>) => {

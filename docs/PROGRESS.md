@@ -1,6 +1,6 @@
 # Melio — Development Progress
 
-> Last Updated: M3 Complete
+> Last Updated: M4 Complete
 
 ---
 
@@ -12,7 +12,7 @@
 | M1 | ✅ Complete | src/middleware/auth.ts, src/services/auth.service.ts, src/controllers/auth.controller.ts, src/routes/auth.routes.ts, src/db/migrations/001_create_users.sql, src/db/seeds/seed-admin.ts |
 | M2 | ✅ Complete | src/services/product.service.ts, src/controllers/product.controller.ts, src/routes/product.routes.ts, src/routes/seller.routes.ts, src/routes/admin.routes.ts, src/db/migrations/002_create_products.sql |
 | M3 | ✅ Complete | src/services/search.service.ts, src/controllers/search.controller.ts, src/routes/search.routes.ts, src/db/migrations/004_search_index.sql |
-| M4 | ⬜ Not Started | — |
+| M4 | ✅ Complete | src/services/cart.service.ts, src/services/order.service.ts, src/controllers/cart.controller.ts, src/controllers/order.controller.ts, src/routes/cart.routes.ts, src/routes/order.routes.ts, src/db/migrations/005_create_cart_orders.sql |
 | M5 | ⬜ Not Started | — |
 | M6 | ⬜ Not Started | — |
 | M7 | ⬜ Not Started | — |
@@ -192,17 +192,67 @@
 
 ---
 
+## M4 — Cart & Checkout ✅
+
+**Goal:** Buyers can manage a cart and place orders with stock management
+
+### What Was Built
+
+- Full cart CRUD: add, view, update quantity, remove item, clear cart
+- Upsert logic on add — if item already in cart, quantity increments
+- Stock validation on every add/update
+- Sellers cannot add their own products to cart
+- Order placement: fetches cart → validates stock → creates order + items → decrements stock → clears cart
+- Address snapshot saved as JSONB at time of order (never affected by future address changes)
+- Price locked at purchase time (`price_at_purchase` on order items)
+- Buyer can cancel order while status is `pending` — stock is restored
+- Seller can update order status through the progression: `pending → processing → shipped → delivered`
+- Status regression blocked (cannot move backwards)
+- Admin can view all orders, optionally filtered by status
+
+### Files Created
+
+| File | Purpose |
+|---|---|
+| `src/services/cart.service.ts` | getCart, addToCart (upsert), updateCartQuantity, removeFromCart, clearCart |
+| `src/services/order.service.ts` | placeOrder, getOrderById, getBuyerOrders, getSellerOrders, updateOrderStatus, cancelOrder |
+| `src/controllers/cart.controller.ts` | Request/response handling for all cart endpoints |
+| `src/controllers/order.controller.ts` | Request/response handling for all order endpoints |
+| `src/routes/cart.routes.ts` | Cart routes mounted at `/api/cart` — buyer only |
+| `src/routes/order.routes.ts` | Order routes mounted at `/api/orders` — buyer only |
+| `src/db/migrations/005_create_cart_orders.sql` | Creates cart_items (UNIQUE buyer+product), orders (with JSONB address snapshot), order_items tables |
+
+### Endpoints
+
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | `/api/cart` | buyer | Get cart with product details + total |
+| POST | `/api/cart` | buyer | Add item (or increment quantity if exists) |
+| PUT | `/api/cart/:itemId` | buyer | Update item quantity |
+| DELETE | `/api/cart/:itemId` | buyer | Remove item |
+| DELETE | `/api/cart` | buyer | Clear entire cart |
+| POST | `/api/orders` | buyer | Place order from cart |
+| GET | `/api/orders` | buyer | Get buyer's order history |
+| GET | `/api/orders/:id` | buyer | Get single order with items |
+| PUT | `/api/orders/:id/cancel` | buyer | Cancel order (pending only) |
+| GET | `/api/seller/orders` | isApprovedSeller | Get orders containing seller's items |
+| PUT | `/api/seller/orders/:id/status` | isApprovedSeller | Update order status |
+| GET | `/api/admin/orders` | isAdmin | Get all orders (filterable by status) |
+
+### Key Rules Implemented
+
+- Stock decremented atomically per item on order placement
+- Stock restored if buyer cancels
+- `price_at_purchase` locked at order time — price changes don't affect existing orders
+- `address_snapshot` JSONB — delivery address frozen at order time
+- Sellers only see orders that contain their own items
+- Status progression enforced: cannot go backwards, only forwards
+
+---
+
 ## What's Next
 
-### M4 — Cart & Checkout (Up Next)
-
-- `cart_items` table migration
-- Add to cart, update quantity, remove from cart, clear cart
-- Order placement with address snapshot
-- Payment method selection: COD or JazzCash
-- Stock decrement on order confirmed
-
-### M5 — Order Management
+### M5 — Order Management (Up Next)
 
 - Seller manually updates order status (pending → processing → shipped → delivered)
 - Buyer can view and track own orders

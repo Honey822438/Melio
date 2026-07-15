@@ -3,6 +3,14 @@ import { adminGetProductsHandler, adminDeleteProductHandler } from '../controlle
 import { createCategoryHandler, deleteCategoryHandler } from '../controllers/category.controller'
 import { adminGetOrdersHandler } from '../controllers/order.controller'
 import { deleteReviewHandler } from '../controllers/review.controller'
+import {
+  getPlatformStatsHandler,
+  getPendingSellersHandler,
+  verifySellerHandler,
+  rejectSellerHandler,
+  listUsersHandler,
+  getAdminRecentOrdersHandler,
+} from '../controllers/admin.dashboard.controller'
 import { verifyToken, requireRole } from '../middleware/auth'
 
 const router = Router()
@@ -23,5 +31,15 @@ router.get('/orders', adminGetOrdersHandler)
 
 // Reviews
 router.delete('/reviews/:id', deleteReviewHandler)
+
+// Dashboard
+router.get('/dashboard/stats', getPlatformStatsHandler)
+router.get('/dashboard/recent-orders', getAdminRecentOrdersHandler)
+
+// User management
+router.get('/users', listUsersHandler)
+router.get('/sellers/pending', getPendingSellersHandler)
+router.put('/sellers/:id/verify', verifySellerHandler)
+router.delete('/sellers/:id', rejectSellerHandler)
 
 export default router

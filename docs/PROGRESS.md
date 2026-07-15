@@ -1,6 +1,6 @@
 # Melio — Development Progress
 
-> Last Updated: M6 Complete
+> Last Updated: M7 Complete
 
 ---
 
@@ -15,7 +15,7 @@
 | M4 | ✅ Complete | src/services/cart.service.ts, src/services/order.service.ts, src/controllers/cart.controller.ts, src/controllers/order.controller.ts, src/routes/cart.routes.ts, src/routes/order.routes.ts, src/db/migrations/005_create_cart_orders.sql |
 | M5 | ✅ Complete | Covered fully in M4 — order status, seller order views, buyer tracking, cancel order |
 | M6 | ✅ Complete | src/services/review.service.ts, src/controllers/review.controller.ts, src/routes/review.routes.ts, src/db/migrations/006_create_reviews.sql |
-| M7 | ⬜ Not Started | — |
+| M7 | ✅ Complete | src/services/seller.dashboard.service.ts, src/services/admin.dashboard.service.ts, src/controllers/seller.dashboard.controller.ts, src/controllers/admin.dashboard.controller.ts |
 | M8 | ⬜ Not Started | — |
 | M9 | ⬜ Not Started | — |
 | M10 | ⬜ Not Started | — |
@@ -250,9 +250,53 @@
 
 ---
 
+## M7 — Dashboards ✅
+
+**Goal:** Seller and Admin have dedicated stats and management endpoints
+
+### What Was Built
+
+**Seller Dashboard:**
+- Summary stats: total revenue, total orders, total products, total reviews, avg rating, orders broken down by status
+- Top 5 products by revenue (aggregated from order history)
+- Recent 10 orders with buyer name, product info, and status
+
+**Admin Dashboard:**
+- Platform stats: total users, buyers, sellers, pending approvals, products, orders, total revenue, this month's orders and revenue — all fetched in parallel
+- Pending seller approvals list (sellers awaiting verification)
+- Verify a seller (sets `is_verified = true`)
+- Reject/delete an unverified seller account
+- List all users (filterable by role, paginated)
+- Recent orders overview with item counts
+
+### Files Created
+
+| File | Purpose |
+|---|---|
+| `src/services/seller.dashboard.service.ts` | getSellerStats, getSellerTopProducts, getSellerRecentOrders |
+| `src/services/admin.dashboard.service.ts` | getPlatformStats, getPendingSellerApprovals, verifySeller, rejectSeller, listUsers, getAdminRecentOrders |
+| `src/controllers/seller.dashboard.controller.ts` | Request/response for seller dashboard endpoints |
+| `src/controllers/admin.dashboard.controller.ts` | Request/response for admin dashboard endpoints |
+
+### Endpoints
+
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | `/api/seller/dashboard/stats` | isApprovedSeller | Revenue, orders, products, avg rating, status breakdown |
+| GET | `/api/seller/dashboard/top-products` | isApprovedSeller | Top products by revenue (default 5) |
+| GET | `/api/seller/dashboard/recent-orders` | isApprovedSeller | Recent orders (default 10) |
+| GET | `/api/admin/dashboard/stats` | isAdmin | Full platform stats |
+| GET | `/api/admin/dashboard/recent-orders` | isAdmin | Recent orders across platform |
+| GET | `/api/admin/users` | isAdmin | List all users (filterable by role) |
+| GET | `/api/admin/sellers/pending` | isAdmin | Sellers awaiting approval |
+| PUT | `/api/admin/sellers/:id/verify` | isAdmin | Approve a seller |
+| DELETE | `/api/admin/sellers/:id` | isAdmin | Reject and delete an unverified seller |
+
+---
+
 ## What's Next
 
-### M7 — Dashboards (Up Next)
+### M8 — Payments (Up Next)
 
 - Seller dashboard: sales stats, product list, order management
 - Admin dashboard: user management, seller verification, platform metrics

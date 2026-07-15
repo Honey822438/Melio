@@ -1,6 +1,6 @@
 # Melio — Development Progress
 
-> Last Updated: M4 Complete
+> Last Updated: M6 Complete
 
 ---
 
@@ -13,8 +13,8 @@
 | M2 | ✅ Complete | src/services/product.service.ts, src/controllers/product.controller.ts, src/routes/product.routes.ts, src/routes/seller.routes.ts, src/routes/admin.routes.ts, src/db/migrations/002_create_products.sql |
 | M3 | ✅ Complete | src/services/search.service.ts, src/controllers/search.controller.ts, src/routes/search.routes.ts, src/db/migrations/004_search_index.sql |
 | M4 | ✅ Complete | src/services/cart.service.ts, src/services/order.service.ts, src/controllers/cart.controller.ts, src/controllers/order.controller.ts, src/routes/cart.routes.ts, src/routes/order.routes.ts, src/db/migrations/005_create_cart_orders.sql |
-| M5 | ⬜ Not Started | — |
-| M6 | ⬜ Not Started | — |
+| M5 | ✅ Complete | Covered fully in M4 — order status, seller order views, buyer tracking, cancel order |
+| M6 | ✅ Complete | src/services/review.service.ts, src/controllers/review.controller.ts, src/routes/review.routes.ts, src/db/migrations/006_create_reviews.sql |
 | M7 | ⬜ Not Started | — |
 | M8 | ⬜ Not Started | — |
 | M9 | ⬜ Not Started | — |
@@ -252,19 +252,7 @@
 
 ## What's Next
 
-### M5 — Order Management (Up Next)
-
-- Seller manually updates order status (pending → processing → shipped → delivered)
-- Buyer can view and track own orders
-- Cancel order (buyer, within window)
-
-### M6 — Reviews & Ratings
-
-- Buyer can review a product only after a delivered order
-- One review per buyer per product
-- avg_rating recalculated on every new review
-
-### M7 — Dashboards
+### M7 — Dashboards (Up Next)
 
 - Seller dashboard: sales stats, product list, order management
 - Admin dashboard: user management, seller verification, platform metrics
